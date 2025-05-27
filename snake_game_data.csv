@@ -1,0 +1,10 @@
+SessionID,PlayerName,Score,Length,DurationSeconds,Date,ReasonForEnd,Frame,SnakeX,SnakeY,FoodX,FoodY,Direction
+1,Alice,12,13,45,2025-05-27,Hit Wall,1,100,200,300,300,RIGHT
+1,Alice,12,13,45,2025-05-27,Hit Wall,2,120,200,300,300,RIGHT
+1,Alice,12,13,45,2025-05-27,Hit Wall,3,140,200,300,300,RIGHT
+2,Bob,5,6,23,2025-05-27,Hit Self,1,300,100,400,200,DOWN
+2,Bob,5,6,23,2025-05-27,Hit Self,2,300,120,400,200,DOWN
+2,Bob,5,6,23,2025-05-27,Hit Self,3,300,140,400,200,DOWN
+3,Charlie,18,19,65,2025-05-27,Quit,1,50,50,60,60,UP
+3,Charlie,18,19,65,2025-05-27,Quit,2,50,30,60,60,UP
+3,Charlie,18,19,65,2025-05-27,Quit,3,50,10,60,60,UP
