@@ -2,18 +2,19 @@ import pygame
 import random
 import os
 
-pygame.init()
-
+# --- SETTINGS ---
 WIDTH, HEIGHT = 600, 400
 CELL_SIZE = 20
+CELL_NUMBER_X = WIDTH // CELL_SIZE
+CELL_NUMBER_Y = HEIGHT // CELL_SIZE
 
 WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
 YELLOW = (255, 255, 0)
 RED = (220, 0, 0)
 
+pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption('Snake Game with Assets')
+pygame.display.set_caption('Snake Game Hybrid')
 clock = pygame.time.Clock()
 FPS = 10
 font = pygame.font.SysFont('arial', 25)
@@ -40,69 +41,68 @@ images = {
     "tail_left": load_image("tail_left.png"),
     "tail_right": load_image("tail_right.png"),
     "fruit": load_image("apple.png"),
-    # "tile": pygame.transform.scale(load_image("tile.png"), (CELL_SIZE, CELL_SIZE))  <- remove or comment this line
 }
-
 
 def draw_background():
     light_green = (170, 215, 81)
     dark_green = (162, 209, 73)
-
     for y in range(0, HEIGHT, CELL_SIZE):
         for x in range(0, WIDTH, CELL_SIZE):
             color = light_green if (x // CELL_SIZE + y // CELL_SIZE) % 2 == 0 else dark_green
             pygame.draw.rect(screen, color, pygame.Rect(x, y, CELL_SIZE, CELL_SIZE))
 
-def get_direction(p1, p2):
-    """Returns direction FROM p1 TO p2"""
-    x1, y1 = p1
-    x2, y2 = p2
-    dx, dy = x2 - x1, y2 - y1
-    if dx == 0 and dy < 0: return "UP"
-    if dx == 0 and dy > 0: return "DOWN"
-    if dy == 0 and dx < 0: return "LEFT"
-    if dy == 0 and dx > 0: return "RIGHT"
-    return None
+def vector_from_coords(p1, p2):
+    # Returns a tuple (dx, dy) as a difference between two points
+    return (p2[0] - p1[0], p2[1] - p1[1])
 
 def draw_snake(snake_body):
-    for i in range(len(snake_body)):
-        segment = snake_body[i]
-
-        if i == 0:
-            direction = get_direction(segment, snake_body[1])
-            screen.blit(images[f"head_{direction.lower()}"], segment)
+    for i, segment in enumerate(snake_body):
+        x, y = segment
+        pos = (x, y)
+        rect = pygame.Rect(x, y, CELL_SIZE, CELL_SIZE)
+        if i == 0:  # Head
+            head_dir = (snake_body[1][0] - segment[0], snake_body[1][1] - segment[1])
+            if head_dir == (CELL_SIZE, 0):
+                screen.blit(images["head_left"], rect)
+            elif head_dir == (-CELL_SIZE, 0):
+                screen.blit(images["head_right"], rect)
+            elif head_dir == (0, CELL_SIZE):
+                screen.blit(images["head_up"], rect)
+            elif head_dir == (0, -CELL_SIZE):
+                screen.blit(images["head_down"], rect)
         elif i == len(snake_body) - 1:  # Tail
-            direction = get_direction(snake_body[-2], segment)
-            screen.blit(images[f"tail_{direction.lower()}"], segment)
+            tail_dir = (snake_body[-2][0] - segment[0], snake_body[-2][1] - segment[1])
+            if tail_dir == (CELL_SIZE, 0):
+                screen.blit(images["tail_left"], rect)
+            elif tail_dir == (-CELL_SIZE, 0):
+                screen.blit(images["tail_right"], rect)
+            elif tail_dir == (0, CELL_SIZE):
+                screen.blit(images["tail_up"], rect)
+            elif tail_dir == (0, -CELL_SIZE):
+                screen.blit(images["tail_down"], rect)
         else:
-            prev = snake_body[i - 1]
-            next = snake_body[i + 1]
-
-            from_prev = get_direction(segment, prev)
-            to_next = get_direction(segment, next)
-
-            if from_prev == to_next:
-                if from_prev in ("UP", "DOWN"):
-                    screen.blit(images["body_vertical"], segment)
-                else:
-                    screen.blit(images["body_horizontal"], segment)
+            prev = snake_body[i + 1]
+            next = snake_body[i - 1]
+            prev_dir = (prev[0] - segment[0], prev[1] - segment[1])
+            next_dir = (next[0] - segment[0], next[1] - segment[1])
+            # Straight
+            if prev_dir[0] == next_dir[0]:
+                screen.blit(images["body_vertical"], rect)
+            elif prev_dir[1] == next_dir[1]:
+                screen.blit(images["body_horizontal"], rect)
             else:
-                # Determine correct corner image based on turn
-                turn_map = {
-                    ("UP", "RIGHT"): "body_topright",
-                    ("RIGHT", "UP"): "body_topright",
-                    ("UP", "LEFT"): "body_topleft",
-                    ("LEFT", "UP"): "body_topleft",
-                    ("DOWN", "RIGHT"): "body_bottomright",
-                    ("RIGHT", "DOWN"): "body_bottomright",
-                    ("DOWN", "LEFT"): "body_bottomleft",
-                    ("LEFT", "DOWN"): "body_bottomleft",
-                }
-                screen.blit(images[turn_map.get((from_prev, to_next), "body_horizontal")], segment)
-
+                # Corners
+                if (prev_dir == (0, -CELL_SIZE) and next_dir == (-CELL_SIZE, 0)) or (next_dir == (0, -CELL_SIZE) and prev_dir == (-CELL_SIZE, 0)):
+                    screen.blit(images["body_topleft"], rect)
+                elif (prev_dir == (0, -CELL_SIZE) and next_dir == (CELL_SIZE, 0)) or (next_dir == (0, -CELL_SIZE) and prev_dir == (CELL_SIZE, 0)):
+                    screen.blit(images["body_topright"], rect)
+                elif (prev_dir == (0, CELL_SIZE) and next_dir == (-CELL_SIZE, 0)) or (next_dir == (0, CELL_SIZE) and prev_dir == (-CELL_SIZE, 0)):
+                    screen.blit(images["body_bottomleft"], rect)
+                elif (prev_dir == (0, CELL_SIZE) and next_dir == (CELL_SIZE, 0)) or (next_dir == (0, CELL_SIZE) and prev_dir == (CELL_SIZE, 0)):
+                    screen.blit(images["body_bottomright"], rect)
 
 def draw_fruit(pos):
-    screen.blit(images["fruit"], pos)
+    screen.blit(images["fruit"], pygame.Rect(pos[0], pos[1], CELL_SIZE, CELL_SIZE))
 
 def display_score(score):
     text = font.render(f'Score: {score}', True, WHITE)
@@ -113,7 +113,7 @@ def display_lives(lives):
     screen.blit(text, (WIDTH - 120, 10))
 
 def game_over_screen(score):
-    screen.fill(BLACK)
+    screen.fill((0,0,0))
     game_over_text = font.render("Game Over!", True, RED)
     score_text = font.render(f"Final Score: {score}", True, WHITE)
     restart_text = font.render("Press R to Restart or Q to Quit", True, WHITE)
@@ -182,7 +182,6 @@ def main():
                 snake_pos[0] += CELL_SIZE
 
             snake_body.insert(0, list(snake_pos))
-
             if snake_pos == fruit_pos:
                 score += 1
                 fruit_pos = spawn_fruit(snake_body)
