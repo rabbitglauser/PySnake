@@ -2,6 +2,9 @@
 
 ![image](https://github.com/user-attachments/assets/96b692c7-a100-4bf9-a338-cfbb5d9b2ae7)
 
+![image](https://github.com/user-attachments/assets/b8d20442-bc44-4eb5-898d-06ac83f02591)
+
+https://claude.ai/chat/79b94934-7bfc-4101-a823-a7a76af39108
 ### Criteria
 
 # Project Name (Pygame)
