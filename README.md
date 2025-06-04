@@ -1,8 +1,12 @@
 ### simple Python snake game for school
 
-![image](https://github.com/user-attachments/assets/96b692c7-a100-4bf9-a338-cfbb5d9b2ae7)
+![image](https://github.com/user-attachments/assets/d60a503e-7680-45f7-8be9-488654d8bf0a)
 
-![image](https://github.com/user-attachments/assets/b8d20442-bc44-4eb5-898d-06ac83f02591)
+![image](https://github.com/user-attachments/assets/782a45c3-4ac5-4c8a-9c22-b608923cd823)
+
+![image](https://github.com/user-attachments/assets/52711a48-d606-4ee7-bb16-ec582d9915e2)
+
+
 
 https://claude.ai/chat/79b94934-7bfc-4101-a823-a7a76af39108
 ### Criteria
