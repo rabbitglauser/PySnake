@@ -5,9 +5,9 @@ from snake import Snake
 from fruit import Fruit
 import ui
 
-def load_image(name):
+def load_image(name, size=(CELL_SIZE, CELL_SIZE)):
     img = pygame.image.load(os.path.join(ASSET_PATH, name)).convert_alpha()
-    return pygame.transform.scale(img, (CELL_SIZE, CELL_SIZE))
+    return pygame.transform.scale(img, size)
 
 def main():
     pygame.init()
@@ -33,12 +33,13 @@ def main():
         "tail_left": load_image("tail_left.png"),
         "tail_right": load_image("tail_right.png"),
         "fruit": load_image("apple.png"),
+        "heart": load_image("heart.png", size=(80, 80)),
     }
 
     lives = 3
     score = 0
     high_score = 0
-    game_state = "START"  # "START", "PLAYING", "GAME_OVER"
+    game_state = "START"
 
     snake = Snake(images)
     fruit = Fruit(snake.get_body())
@@ -46,19 +47,15 @@ def main():
     change_to = direction
 
     while True:
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_click = False
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 return
-            if game_state == "START":
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                    lives = 3
-                    score = 0
-                    snake.reset()
-                    change_to = 'RIGHT'
-                    direction = 'RIGHT'
-                    fruit = Fruit(snake.get_body())
-                    game_state = "PLAYING"
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_click = True
             elif game_state == "GAME_OVER":
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_r:
@@ -81,20 +78,41 @@ def main():
                         return
 
         if game_state == "START":
-            ui.draw_start_menu(screen, font)
+            clicked_button = ui.draw_start_menu(screen, WIDTH, HEIGHT)
+            if clicked_button == "start":
+                lives = 3
+                score = 0
+                snake.reset()
+                change_to = 'RIGHT'
+                direction = 'RIGHT'
+                fruit = Fruit(snake.get_body())
+                game_state = "PLAYING"
+            elif clicked_button == "info":
+                print("Info button clicked — no action yet.")
+
         elif game_state == "GAME_OVER":
-            ui.draw_game_over_screen(screen, font, score, high_score)
+            action = ui.draw_game_over_screen(screen, WIDTH, HEIGHT, score, high_score)
+            if action == "restart":
+                lives = 3
+                score = 0
+                snake.reset()
+                change_to = 'RIGHT'
+                direction = 'RIGHT'
+                fruit = Fruit(snake.get_body())
+                game_state = "PLAYING"
+            elif action == "quit":
+                pygame.quit()
+
         elif game_state == "PLAYING":
             direction = change_to
             snake.move(direction)
-            # Check fruit collision
+
             if snake.get_head_pos() == fruit.get_pos():
                 score += 1
                 fruit.spawn(snake.get_body())
             else:
                 snake.shrink()
 
-            # Check collisions
             head = snake.get_head_pos()
             hit_wall = (
                 head[0] < 0 or head[0] >= WIDTH or
@@ -118,9 +136,9 @@ def main():
             snake.draw(screen)
             screen.blit(images["fruit"], pygame.Rect(fruit.get_pos()[0], fruit.get_pos()[1], CELL_SIZE, CELL_SIZE))
             ui.display_score(screen, font, score)
-            ui.display_lives(screen, font, lives)
-            pygame.display.update()
-            clock.tick(FPS)
+            ui.display_lives(screen, font, lives, images["heart"])
+        pygame.display.update()
+        clock.tick(FPS)
 
 if __name__ == '__main__':
     main()
