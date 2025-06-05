@@ -94,14 +94,69 @@ def draw_start_menu(screen, width, height):
     pygame.display.update()
 
     # --- Handle Clicks ---
-    if mouse_click[0]:  # Left click
-        if start_hover:
+    if mouse_click[0]:  # Left mouse button clicked
+        if start_rect.collidepoint(mouse_pos):
             return "start"
-        elif info_hover:
+        elif info_rect.collidepoint(mouse_pos):
+            print("Info button clicked — no action yet.")
             return "info"
 
-    return "menu"
+    return None
 
+def draw_info_screen(screen, width, height):
+    clock = pygame.time.Clock()
+    running = True
+
+    while running:
+        screen.fill((250, 250, 220))  # Light background
+
+        font_title = pygame.font.SysFont("Arial", 36, bold=True)
+        font_body = pygame.font.SysFont("Courier New", 16)
+        button_font = pygame.font.SysFont("Arial", 16, bold=True)
+
+        # Title
+        title = font_title.render("Game Information", True, (0, 100, 0))
+        screen.blit(title, (width // 2 - title.get_width() // 2, 40))
+
+        # Info text
+        info_lines = [
+            "This is a classic Snake game.",
+            "- Use arrow keys to control the snake.",
+            "- Eat fruits to grow longer.",
+            "- Avoid crashing into walls or yourself.",
+            "- You have 3 lives. Try to get a high score!",
+            "",
+            "Have fun playing!"
+        ]
+
+        for i, line in enumerate(info_lines):
+            txt = font_body.render(line, True, (30, 30, 30))
+            screen.blit(txt, (width // 2 - txt.get_width() // 2, 100 + i * 30))
+
+        # Back button
+        back_rect = pygame.Rect(width // 2 - 45, height - 80, 90, 35)
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_click = pygame.mouse.get_pressed()
+
+        hover = back_rect.collidepoint(mouse_pos)
+        color = (200, 100, 100) if hover else (180, 80, 80)
+        pygame.draw.rect(screen, color, back_rect, border_radius=6)
+        pygame.draw.rect(screen, (120, 40, 40), back_rect, 2, border_radius=6)
+
+        back_text = button_font.render("BACK", True, (255, 255, 255))
+        screen.blit(back_text, (width // 2 - back_text.get_width() // 2, height - 70))
+
+        pygame.display.update()
+        clock.tick(60)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+        if hover and mouse_click[0]:
+            pygame.time.wait(200)  # small delay to avoid instant re-click
+            return "back"
 
 def draw_game_over_screen(screen, width, height, score, high_score):
     screen.fill((140, 198, 62))  # Same background green as start menu

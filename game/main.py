@@ -88,7 +88,12 @@ def main():
                 fruit = Fruit(snake.get_body())
                 game_state = "PLAYING"
             elif clicked_button == "info":
-                print("Info button clicked — no action yet.")
+                game_state = "INFO"
+
+        elif game_state == "INFO":
+            result = ui.draw_info_screen(screen, WIDTH, HEIGHT)
+            if result == "back":
+                game_state = "START"
 
         elif game_state == "GAME_OVER":
             action = ui.draw_game_over_screen(screen, WIDTH, HEIGHT, score, high_score)
@@ -102,6 +107,7 @@ def main():
                 game_state = "PLAYING"
             elif action == "quit":
                 pygame.quit()
+                return
 
         elif game_state == "PLAYING":
             direction = change_to
@@ -134,9 +140,13 @@ def main():
 
             ui.draw_background(screen)
             snake.draw(screen)
-            screen.blit(images["fruit"], pygame.Rect(fruit.get_pos()[0], fruit.get_pos()[1], CELL_SIZE, CELL_SIZE))
+            screen.blit(
+                images["fruit"],
+                pygame.Rect(fruit.get_pos()[0], fruit.get_pos()[1], CELL_SIZE, CELL_SIZE)
+            )
             ui.display_score(screen, font, score)
             ui.display_lives(screen, font, lives, images["heart"])
+
         pygame.display.update()
         clock.tick(FPS)
 
