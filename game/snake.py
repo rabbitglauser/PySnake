@@ -40,10 +40,10 @@ class Snake:
         self.body.pop()
 
     def get_head_pos(self):
-        return self.body[0]
+        return tuple(self.body[0])
 
     def get_body(self):
-        return self.body
+        return [tuple(seg) for seg in self.body]
 
     def draw(self, screen):
         snake_body = self.body

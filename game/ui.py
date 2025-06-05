@@ -121,7 +121,8 @@ def draw_info_screen(screen, width, height):
         # Info text
         info_lines = [
             "This is a classic Snake game.",
-            "- Use arrow keys to control the snake.",
+            "* Rules",
+            "- try adn collect as many fruits as you can without hitting yourself or the wall.",
             "- Eat fruits to grow longer.",
             "- Avoid crashing into walls or yourself.",
             "- You have 3 lives. Try to get a high score!",
@@ -266,3 +267,41 @@ def draw_you_win_screen(screen, width, height, score, high_score):
         elif quit_hover:
             return "quit"
     return "you_win"
+
+def draw_obstacles(screen, obstacles):
+    color = (139, 69, 19)  # Brown color for obstacles
+    for pos in obstacles:
+        pygame.draw.rect(screen, color, pygame.Rect(pos[0], pos[1], CELL_SIZE, CELL_SIZE))
+
+def draw_snake(screen, snake_body):
+    green = (0, 155, 0)
+    dark_green = (0, 100, 0)
+
+    for i, pos in enumerate(snake_body):
+        rect = pygame.Rect(pos[0], pos[1], CELL_SIZE, CELL_SIZE)
+        color = dark_green if i == 0 else green  # Head darker color
+        pygame.draw.rect(screen, color, rect)
+        pygame.draw.rect(screen, (0, 50, 0), rect, 1)  # Outline
+
+def draw_fruit(screen, fruit_pos):
+    red = (255, 0, 0)
+    pygame.draw.rect(screen, red, pygame.Rect(fruit_pos[0], fruit_pos[1], CELL_SIZE, CELL_SIZE))
+
+def check_collision(pos1, pos2):
+    return pos1[0] == pos2[0] and pos1[1] == pos2[1]
+
+def is_snake_colliding_with_obstacles(snake_body, obstacles):
+    head = snake_body[0]
+    for obstacle in obstacles:
+        if check_collision(head, obstacle):
+            return True
+    return False
+
+def is_snake_colliding_with_self(snake_body):
+    head = snake_body[0]
+    return head in snake_body[1:]
+
+def is_snake_out_of_bounds(snake_body, width, height):
+    head = snake_body[0]
+    x, y = head
+    return x < 0 or y < 0 or x >= width or y >= height
