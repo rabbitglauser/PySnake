@@ -212,3 +212,57 @@ def draw_game_over_screen(screen, width, height, score, high_score):
         elif quit_hover:
             return "quit"
     return "game_over"
+
+def draw_you_win_screen(screen, width, height, score, high_score):
+    screen.fill((140, 198, 62))  # Same background green as start menu
+
+    mouse_pos = pygame.mouse.get_pos()
+    mouse_click = pygame.mouse.get_pressed()
+
+    # Fonts
+    title_font = pygame.font.SysFont("Arial", 40, bold=True)
+    subtitle_font = pygame.font.SysFont("Arial", 18)
+    body_font = pygame.font.SysFont("Courier New", 14)
+    button_font = pygame.font.SysFont("Arial", 16, bold=True)
+
+    # Title
+    you_win_text = title_font.render("YOU WIN!", True, (0, 70, 20))
+    screen.blit(you_win_text, (width // 2 - you_win_text.get_width() // 2, 40))
+
+    # Score box
+    pygame.draw.rect(screen, (172, 224, 144), (width // 2 - 180, 100, 360, 80), border_radius=8)
+    pygame.draw.rect(screen, (30, 120, 40), (width // 2 - 180, 100, 360, 80), 2, border_radius=8)
+
+    final_score_text = body_font.render(f"Final Score: {score}", True, (30, 70, 30))
+    high_score_text = body_font.render(f"High Score: {high_score}", True, (30, 70, 30))
+    screen.blit(final_score_text, (width // 2 - final_score_text.get_width() // 2, 120))
+    screen.blit(high_score_text, (width // 2 - high_score_text.get_width() // 2, 150))
+
+    # Restart Button
+    restart_rect = pygame.Rect(width // 2 - 140, 200, 120, 35)
+    restart_hover = restart_rect.collidepoint(mouse_pos)
+    restart_color = (46, 158, 77) if restart_hover else (36, 138, 67)
+    pygame.draw.rect(screen, restart_color, restart_rect, border_radius=6)
+    pygame.draw.rect(screen, (0, 90, 40), restart_rect, 2, border_radius=6)
+    restart_text = button_font.render("RESTART", True, (255, 255, 255))
+    screen.blit(restart_text, (restart_rect.x + (restart_rect.width - restart_text.get_width()) // 2,
+                               restart_rect.y + 7))
+
+    # Quit Button
+    quit_rect = pygame.Rect(width // 2 + 20, 200, 120, 35)
+    quit_hover = quit_rect.collidepoint(mouse_pos)
+    quit_color = (255, 190, 40) if quit_hover else (255, 170, 0)
+    pygame.draw.rect(screen, quit_color, quit_rect, border_radius=6)
+    pygame.draw.rect(screen, (255, 110, 0), quit_rect, 2, border_radius=6)
+    quit_text = button_font.render("QUIT", True, (0, 0, 0))
+    screen.blit(quit_text, (quit_rect.x + (quit_rect.width - quit_text.get_width()) // 2,
+                            quit_rect.y + 7))
+
+    pygame.display.update()
+
+    if mouse_click[0]:  # Left click
+        if restart_hover:
+            return "restart"
+        elif quit_hover:
+            return "quit"
+    return "you_win"

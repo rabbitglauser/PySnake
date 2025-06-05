@@ -109,13 +109,32 @@ def main():
                 pygame.quit()
                 return
 
+        elif game_state == "YOU_WIN":
+            action = ui.draw_you_win_screen(screen, WIDTH, HEIGHT, score, high_score)
+            if action == "restart":
+                lives = 3
+                score = 0
+                snake.reset()
+                change_to = 'RIGHT'
+                direction = 'RIGHT'
+                fruit = Fruit(snake.get_body())
+                game_state = "PLAYING"
+            elif action == "quit":
+                pygame.quit()
+                return
+
         elif game_state == "PLAYING":
             direction = change_to
             snake.move(direction)
 
             if snake.get_head_pos() == fruit.get_pos():
                 score += 1
-                fruit.spawn(snake.get_body())
+                if score > high_score:
+                    high_score = score
+                if score >= 30:
+                    game_state = "YOU_WIN"
+                else:
+                    fruit.spawn(snake.get_body())
             else:
                 snake.shrink()
 
