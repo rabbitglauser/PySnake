@@ -13,21 +13,6 @@ def display_score(screen, font, score):
     text = font.render(f'Score: {score}', True, WHITE)
     screen.blit(text, (10, 10))
 
-def display_lives(screen, font, lives, heart_image):
-    screen_width = screen.get_width()
-    margin = 10
-
-    lives_text = font.render(str(lives), True, (255, 255, 255))
-    text_rect = lives_text.get_rect()
-
-    heart_rect = heart_image.get_rect()
-    heart_rect.topright = (screen_width - text_rect.width - margin - 10, margin)
-
-    text_rect.midleft = (heart_rect.right + 10, heart_rect.centery)
-
-    screen.blit(heart_image, heart_rect)
-    screen.blit(lives_text, text_rect)
-
 def draw_start_menu(screen, width, height):
     screen.fill((140, 198, 62))
 
@@ -125,7 +110,6 @@ def draw_info_screen(screen, width, height):
             "- try adn collect as many fruits as you can without hitting yourself or the wall.",
             "- Eat fruits to grow longer.",
             "- Avoid crashing into walls or yourself.",
-            "- You have 3 lives. Try to get a high score!",
             "",
             "Have fun playing!"
         ]
